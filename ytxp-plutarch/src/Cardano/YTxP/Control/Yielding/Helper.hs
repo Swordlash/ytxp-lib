@@ -42,8 +42,9 @@ yieldingHelper = plam $ \pylstcs redeemer ctx -> unTermCont $ do
           let txInfoMints = pfromData $ pfield @"mint" # txInfo
               authorisedScriptMint = pto (pto txInfoMints) #!! authorisedScriptIndex
               currencySymbol = pscriptHashToCurrencySymbol authorisedScriptHash
-           in ptraceInfoIfFalse "Minting policy does not match expected authorised minting policy" $
-                pfromData (pfstBuiltin # authorisedScriptMint) #== currencySymbol
+              authorisedSymbol = pfromData (pfstBuiltin # authorisedScriptMint)
+           in ptraceInfoIfFalse ("Minting policy does not match expected authorised minting policy: " <> pshow authorisedSymbol <> " /= " <> pshow currencySymbol) $
+                authorisedSymbol #== currencySymbol
         PSpending ->
           let txInfoInputs = pfromData $ pfield @"inputs" # txInfo
               authorisedScriptInput = txInfoInputs #!! authorisedScriptIndex
